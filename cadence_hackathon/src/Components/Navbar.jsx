@@ -47,6 +47,17 @@ function Navbar() {
         >
           Detailed Data Table
         </Link>
+
+        <Link
+          to="/atable"
+          style={{
+            textDecoration: "none",
+            color: location.pathname === "/atable" ? "#4CAF50" : "white",
+            fontWeight: location.pathname === "/atable" ? "bold" : "normal"
+          }}
+        >
+          Analytics Table
+        </Link>
       </div>
     </nav>
   );

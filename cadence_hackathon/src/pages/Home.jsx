@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 
 function Home() {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [keys, setKeys] = useState([]);
+  const [selectedKey, setSelectedKey] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -9,13 +12,15 @@ function Home() {
     try {
       setLoading(true);
       const response = await fetch('http://localhost:5000/api/dashboard/overview');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch data');
-      }
-      
+      if (!response.ok) throw new Error('Failed to fetch data');
       const result = await response.json();
+
       setData(result);
+      setFilteredData(result);
+
+      // Extract all unique keys for dropdown
+      const uniqueKeys = [...new Set(result.map((row) => row.Key))];
+      setKeys(uniqueKeys);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -23,6 +28,15 @@ function Home() {
       setLoading(false);
     }
   };
+
+  // Filter the table based on selected key
+  useEffect(() => {
+    if (selectedKey === 'All') {
+      setFilteredData(data);
+    } else {
+      setFilteredData(data.filter((row) => row.Key === selectedKey));
+    }
+  }, [selectedKey, data]);
 
   useEffect(() => {
     fetchData();
@@ -32,70 +46,68 @@ function Home() {
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
 
   return (
-    <div style={{ padding: '20px', backgroundColor: 'white' }}>
-        <h1 style={{ 
-            padding: '20px', 
-            backgroundColor: '#333', 
-            color: 'white',
-            margin: 0 
-        }}>
-            Cadence Mini Hackathon Dashboard
-        </h1>
-      <h2 style={{ color: 'black' }}>1. Dashboard Overview Table</h2>
-      
-      <table style={{ 
-        width: '100%', 
-        borderCollapse: 'collapse',
-        marginTop: '20px',
-        backgroundColor: 'white'
-      }}>
+    <div className='home-page'>
+      <h1 className='homeHeading'> Dashboard Overview</h1>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ marginRight: '10px', fontWeight: 'bold', color: 'black' }}>Filter by Key:</label>
+        <select
+          value={selectedKey}
+          onChange={(e) => setSelectedKey(e.target.value)}
+          style={{
+            padding: '8px',
+            fontSize: '16px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+          }}
+        >
+          <option value="All">All</option>
+          {keys.map((key, i) => (
+            <option key={i} value={key}>
+              {key}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <table className='homeTable'>
         <thead>
-          <tr style={{ backgroundColor: '#4CAF50', color: 'white' }}>
-            <th style={{ border: '2px solid black', padding: '12px' }}>S.NO</th>
-            <th style={{ border: '2px solid black', padding: '12px' }}>Key</th>
-            <th style={{ border: '2px solid black', padding: '12px' }}>P0</th>
-            <th style={{ border: '2px solid black', padding: '12px' }}>P1</th>
-            <th style={{ border: '2px solid black', padding: '12px' }}>Total</th>
-          </tr>
+            <th className='homeTableColumnHeadings'>S.NO</th>
+            <th className='homeTableColumnHeadings'>Key</th>
+            <th className='homeTableColumnHeadings'>P0</th>
+            <th className='homeTableColumnHeadings'>P1</th>
+            <th className='homeTableColumnHeadings'>Total</th>
         </thead>
         <tbody>
-          {data.map((row, index) => (
-            <tr key={index} style={{ backgroundColor: '#ffeb3b' }}>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>
+          {filteredData.map((row, index) => (
+            <tr key={index} style={{ backgroundColor: 'white' }}>
+              <td style={{ padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>
                 {index + 1}
               </td>
-              <td style={{ border: '2px solid black', padding: '10px', color: 'black', fontSize: '18px' }}>
-                {row.Key}
-              </td>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>
-                {row.P0}
-              </td>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>
-                {row.P1}
-              </td>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>
-                {row.Total}
-              </td>
+              <td style={{ padding: '10px', color: 'black', fontSize: '18px' }}>{row.Key}</td>
+              <td style={{ padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>{row.P0}</td>
+              <td style={{ padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>{row.P1}</td>
+              <td style={{ padding: '10px', textAlign: 'center', color: 'black', fontSize: '18px' }}>{row.Total}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {data.length === 0 && (
+      {filteredData.length === 0 && (
         <p style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>No data available</p>
       )}
 
-      <button 
-        onClick={fetchData} 
-        style={{ 
-          marginTop: '20px', 
+      <button
+        onClick={fetchData}
+        style={{
+          marginTop: '20px',
           padding: '10px 20px',
           backgroundColor: '#4CAF50',
           color: 'white',
           border: 'none',
           cursor: 'pointer',
           borderRadius: '4px',
-          fontSize: '16px'
+          fontSize: '16px',
         }}
       >
         Refresh Data

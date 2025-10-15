@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, PieChart, Pie 
+} from 'recharts';
 
 function Graph() {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState("bar"); // bar or pie
+  const [view, setView] = useState("bar");
+  const [selectedKey, setSelectedKey] = useState("All");
+  const [keys, setKeys] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -14,6 +19,7 @@ function Graph() {
       if (!response.ok) throw new Error('Failed to fetch data');
       const result = await response.json();
       setData(result);
+      setKeys(["All", ...new Set(result.map(item => item.Key))]);
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -26,12 +32,34 @@ function Graph() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (selectedKey === "All") {
+      setFilteredData(data);
+    } else {
+      setFilteredData(data.filter(item => item.Key === selectedKey));
+    }
+  }, [data, selectedKey]);
+
   if (loading) return <div style={{ padding: '20px' }}>Loading...</div>;
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
 
   return (
     <div style={{ padding: '20px', backgroundColor: 'white' }}>
       <h2 style={{ color: 'black' }}>2. Graph Visualization</h2>
+
+      {/* Dropdown filter */}
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ marginRight: '10px' }}>Filter by Key:</label>
+        <select 
+          value={selectedKey} 
+          onChange={(e) => setSelectedKey(e.target.value)}
+          style={{ padding: '5px' }}
+        >
+          {keys.map((key, index) => (
+            <option key={index} value={key}>{key}</option>
+          ))}
+        </select>
+      </div>
 
       {/* Toggle Buttons */}
       <div style={{ marginBottom: '20px' }}>
@@ -46,34 +74,32 @@ function Graph() {
       {/* BAR CHART */}
       {view === "bar" && (
         <div style={{ overflowX: "auto", paddingBottom: "10px" }}>
-            <BarChart width={Math.max(data.length * 120, 700)} height={400} data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="Key" angle={-45} textAnchor="end" interval={0} height={80} />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="P0" fill="#8884d8" />
-                <Bar dataKey="P1" fill="#82ca9d" />
-            </BarChart>
+          <BarChart width={Math.max(filteredData.length * 120, 700)} height={400} data={filteredData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="Key" angle={-45} textAnchor="end" interval={0} height={80} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="P0" fill="#8884d8" />
+            <Bar dataKey="P1" fill="#82ca9d" />
+          </BarChart>
         </div>
-
       )}
 
       {/* PIE CHART */}
       {view === "pie" && (
         <PieChart width={700} height={400}>
           <Pie
-            data={data.map(item => ({ name: item.Key, value: item.Total }))}
+            data={filteredData.map(item => ({ name: item.Key, value: item.Total }))}
             dataKey="value"
             nameKey="name"
             cx="50%"
             cy="50%"
             outerRadius={150}
             fill="#8884d8"
-            label
-          >
-          </Pie>
+          />
           <Tooltip />
+          <Legend />
         </PieChart>
       )}
     </div>

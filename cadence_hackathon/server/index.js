@@ -48,6 +48,58 @@ app.get('/api/dashboard/overview', (req, res) => {
   });
 });
 
+app.get('/api/data-table', (req, res) => {
+  const query = 'SELECT * FROM company';
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
+app.put('/api/data-table/remark', (req, res) => {
+  const { ticket, newRemark, user = "User" } = req.body;
+
+  const getOldRemarkQuery = 'SELECT Remarks FROM company WHERE Ticket = ?';
+
+  db.query(getOldRemarkQuery, [ticket], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(500).json({ error: 'Failed to retrieve old remark' });
+    }
+
+    const oldRemark = results[0].Remarks || '';
+    const timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+    const auditTrailEntry = `${timestamp} (${user}) - Previous: "${oldRemark}"`;
+
+    const remarkExists = newRemark.trim() === '' ? 'N' : 'Y'; // toggle Y/N
+
+    const updateQuery = `
+      UPDATE company 
+      SET Remarks = ?, 
+          RemarkExists = ?, 
+          AuditTrail = CONCAT(IFNULL(AuditTrail, ''), '\n', ?) 
+      WHERE Ticket = ?`;
+
+    db.query(updateQuery, [newRemark, remarkExists, auditTrailEntry, ticket], (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true });
+    });
+  });
+});
+
+
+app.put('/api/data-table/date', (req, res) => {
+  const { ticket, newDate } = req.body;
+
+  const updateQuery = 'UPDATE company SET Date = ? WHERE Ticket = ?';
+
+  db.query(updateQuery, [newDate, ticket], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
+});
+
+
 // Example API endpoint
 app.get('/api/users', (req, res) => {
   db.query('SELECT * FROM users', (err, results) => {
