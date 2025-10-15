@@ -48,7 +48,7 @@ function ATable() {
 
   return (
     <div className='page_layout'>
-      <h2 className='pageHeading'>RSU Breakdown Table</h2>
+      <h1 className='pageHeading'>RSU Breakdown Table</h1>
 
       <table
         className='homeTable'

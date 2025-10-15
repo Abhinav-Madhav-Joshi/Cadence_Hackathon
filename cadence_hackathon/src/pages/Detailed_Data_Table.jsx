@@ -11,6 +11,8 @@ function DDTable() {
   const [remarkInput, setRemarkInput] = useState('');
   const [showRemarks, setShowRemarks] = useState(true);
   const [expandedRemarks, setExpandedRemarks] = useState({});
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
 
   const fetchData = async () => {
     const res = await fetch('http://localhost:5000/api/data-table');
@@ -18,7 +20,7 @@ function DDTable() {
     setData(result);
     setFilteredData(result);
 
-    // Get all unique keys for dropdown
+    // Get all unique keys for dropdown filter
     const uniqueKeys = [...new Set(result.map((row) => row.Key))];
     setKeys(uniqueKeys);
   };
@@ -31,6 +33,28 @@ function DDTable() {
       setFilteredData(data.filter((row) => row.Key === selectedKey));
     }
   }, [selectedKey, data]);
+
+  // Apply sorting
+  const sortedData = React.useMemo(() => {
+    let sortableData = [...filteredData];
+    if (sortColumn) {
+      sortableData.sort((a, b) => {
+        let aValue = a[sortColumn];
+        let bValue = b[sortColumn];
+
+        // Handle Date column properly
+        if (sortColumn === 'Date') {
+          aValue = aValue ? new Date(aValue).getTime() : 0;
+          bValue = bValue ? new Date(bValue).getTime() : 0;
+        }
+
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortableData;
+  }, [filteredData, sortColumn, sortDirection]);
 
   useEffect(() => {
     fetchData();
@@ -78,31 +102,69 @@ function DDTable() {
     }));
   };
 
+  // Handle dropdown change for sorting
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+    if (value === '') {
+      setSortColumn('');
+    } else {
+      setSortColumn(value);
+      setSortDirection('asc'); // default ascending
+    }
+  };
+
+  const toggleSortDirection = () => {
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
   return (
     <div className='page_layout'>
       <h1 className='pageHeading'>Detailed Data Table</h1>
 
+      {/* Filter by Key */}
       <div style={{ marginBottom: '20px' }}>
         <label style={{ marginRight: '10px', fontWeight: 'bold', color: 'black' }}>Filter by Key:</label>
         <select
           value={selectedKey}
           onChange={(e) => setSelectedKey(e.target.value)}
-          style={{
-            padding: '8px',
-            fontSize: '16px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-          }}
+          style={{ padding: '8px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
         >
           <option value="All">All</option>
           {keys.map((key, i) => (
-            <option key={i} value={key}>
-              {key}
-            </option>
+            <option key={i} value={key}>{key}</option>
           ))}
         </select>
       </div>
 
+      {/* Sorting dropdown */}
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ marginRight: '10px', fontWeight: 'bold', color: 'black' }}>Sort by Column:</label>
+        <select
+          value={sortColumn}
+          onChange={handleSortChange}
+          style={{ padding: '8px', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+        >
+          <option value="">None</option>
+          <option value="Key">Key</option>
+          <option value="Ticket">Ticket</option>
+          <option value="RSU">RSU</option>
+          <option value="Escalation">Escalation</option>
+          <option value="Priority">Priority</option>
+          <option value="Date">Date</option>
+          <option value="ProdLevel2">ProdLevel2</option>
+        </select>
+
+        {sortColumn && (
+          <button
+            onClick={toggleSortDirection}
+            style={{ marginLeft: '10px', padding: '5px 10px', cursor: 'pointer' }}
+          >
+            {sortDirection === 'asc' ? 'Asc ▲' : 'Desc ▼'}
+          </button>
+        )}
+      </div>
+
+      {/* Show Remarks Toggle */}
       <label style={{ marginBottom: '10px', display: 'inline-block', color: 'black' }}>
         <input
           type="checkbox"
@@ -113,6 +175,7 @@ function DDTable() {
         Show Remarks Column
       </label>
 
+      {/* Table */}
       <table border="1" cellPadding="10" style={{ width: '100%', backgroundColor: 'white', color: 'black' }}>
         <thead>
           <tr>
@@ -129,7 +192,7 @@ function DDTable() {
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((row) => (
+          {sortedData.map((row) => (
             <tr key={row.Ticket}>
               <td>{row.Key}</td>
               <td>{row.Ticket}</td>
@@ -180,7 +243,10 @@ function DDTable() {
                       {expandedRemarks[row.Ticket] ? (
                         <>
                           <pre style={{ whiteSpace: 'pre-wrap' }}>{row.Remarks || 'No remarks'}</pre>
-                          <button onClick={() => handleRemarkEdit(row.Ticket, row.Remarks)} style={{ marginTop: '5px' }}>
+                          <button
+                            onClick={() => handleRemarkEdit(row.Ticket, row.Remarks)}
+                            style={{ marginTop: '5px' }}
+                          >
                             Edit
                           </button>
                         </>
