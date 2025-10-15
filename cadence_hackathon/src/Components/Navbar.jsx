@@ -26,7 +26,7 @@ function Navbar() {
           Home
         </Link>
 
-        <Link
+        {/* <Link
           to="/graphs"
           style={{
             textDecoration: "none",
@@ -35,7 +35,7 @@ function Navbar() {
           }}
         >
           Data Visualisation
-        </Link>
+        </Link> */}
 
         <Link
           to="/ddt"

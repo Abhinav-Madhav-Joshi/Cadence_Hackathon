@@ -22,3 +22,19 @@
   margin: 6% auto 0 auto;
   border-radius: 10px;
 }
+
+.homeFilter{
+  margin-top: 4%;
+  margin-bottom: 2%;
+}
+
+.homeData{
+  display: flex;
+  justify-content: space-around;
+}
+
+.homeCharts{
+  padding: 20px;
+  width: 50%;
+  /* box-shadow: 0 -5px 10px rgba(0,0,0,0.1); */
+}

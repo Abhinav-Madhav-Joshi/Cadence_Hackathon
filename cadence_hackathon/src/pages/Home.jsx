@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { 
+  BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, PieChart, Pie 
+} from 'recharts';
 
 function Home() {
   const [data, setData] = useState([]);
@@ -7,6 +10,7 @@ function Home() {
   const [selectedKey, setSelectedKey] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [view, setView] = useState("bar"); // bar or pie
 
   const fetchData = async () => {
     try {
@@ -29,7 +33,7 @@ function Home() {
     }
   };
 
-  // Filter the table based on selected key
+  // Filter the table and chart based on selected key
   useEffect(() => {
     if (selectedKey === 'All') {
       setFilteredData(data);
@@ -47,9 +51,9 @@ function Home() {
 
   return (
     <div className='home-page'>
-      <h1 className='homeHeading'> Dashboard Overview</h1>
+        <h1 className='homeHeading'> Dashboard Overview</h1>
 
-      <div style={{ marginBottom: '20px' }}>
+        <div className='homeFilter'>
         <label style={{ marginRight: '10px', fontWeight: 'bold', color: 'black' }}>Filter by Key:</label>
         <select
           value={selectedKey}
@@ -68,15 +72,19 @@ function Home() {
             </option>
           ))}
         </select>
-      </div>
+        </div>
 
+      <div className='homeData'>
+        <div>
       <table className='homeTable'>
         <thead>
+          <tr>
             <th className='homeTableColumnHeadings'>S.NO</th>
             <th className='homeTableColumnHeadings'>Key</th>
             <th className='homeTableColumnHeadings'>P0</th>
             <th className='homeTableColumnHeadings'>P1</th>
             <th className='homeTableColumnHeadings'>Total</th>
+          </tr>
         </thead>
         <tbody>
           {filteredData.map((row, index) => (
@@ -112,6 +120,54 @@ function Home() {
       >
         Refresh Data
       </button>
+      </div>
+
+      <div className='homeCharts'>
+        <h2 style={{ color: 'black' }}>Graph Visualization</h2>
+
+        {/* Toggle Buttons */}
+        <div style={{ marginBottom: '20px' }}>
+          <button onClick={() => setView("bar")} style={{ padding: '8px', marginRight: '10px', cursor: 'pointer' }}>
+            Bar Chart
+          </button>
+          <button onClick={() => setView("pie")} style={{ padding: '8px', cursor: 'pointer' }}>
+            Pie Chart
+          </button>
+        </div>
+
+        {/* BAR CHART */}
+        {view === "bar" && (
+          <div style={{ overflowX: "auto", paddingBottom: "10px" }}>
+            <BarChart width={Math.max(filteredData.length * 120, 700)} height={400} data={filteredData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="Key" angle={-45} textAnchor="end" interval={0} height={80} />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="P0" fill="#8884d8" />
+              <Bar dataKey="P1" fill="#82ca9d" />
+            </BarChart>
+          </div>
+        )}
+
+        {/* PIE CHART */}
+        {view === "pie" && (
+          <PieChart width={700} height={400}>
+            <Pie
+              data={filteredData.map(item => ({ name: item.Key, value: item.Total }))}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={150}
+              fill="#8884d8"
+            />
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        )}
+      </div>
+      </div>
     </div>
   );
 }

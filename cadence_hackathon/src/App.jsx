@@ -1,6 +1,6 @@
 import {Routes,Route} from 'react-router-dom'
 import Home from './pages/Home';
-import Graph from './pages/Graph';
+// import Graph from './pages/Graph';
 import Navbar from './Components/Navbar';
 import DDTable from './pages/Detailed_Data_Table';
 import ATable from './pages/Analytical_Table';
@@ -12,7 +12,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/graphs" element={<Graph />} />
+        {/* <Route path="/graphs" element={<Graph />} /> */}
         <Route path="/ddt" element={<DDTable />} />
         <Route path="/atable" element={<ATable />} />
       </Routes>
