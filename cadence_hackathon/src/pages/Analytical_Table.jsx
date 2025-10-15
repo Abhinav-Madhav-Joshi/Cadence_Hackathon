@@ -125,7 +125,7 @@ function ATable() {
               {getDetailedRecords(selectedRSU.R, selectedRSU.S, selectedRSU.U).map((row, index) => (
                 <tr key={index} style={{ backgroundColor: 'white' }}>
                   {Object.values(row).map((value, i) => (
-                    <td key={i} style={{ border: '1px solid black', padding: '10px', color: 'black' }}>
+                    <td key={i} style={{ padding: '10px', color: 'black' }}>
                       {value?.toString() || ''}
                     </td>
                   ))}
