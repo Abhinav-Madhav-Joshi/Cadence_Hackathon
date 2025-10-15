@@ -50,8 +50,8 @@ function Home() {
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Error: {error}</div>;
 
   return (
-    <div className='home-page'>
-        <h1 className='homeHeading'> Dashboard Overview</h1>
+    <div className='page_layout'>
+        <h1 className='pageHeading'> Dashboard Overview</h1>
 
         <div className='homeFilter'>
         <label style={{ marginRight: '10px', fontWeight: 'bold', color: 'black' }}>Filter by Key:</label>
@@ -105,7 +105,7 @@ function Home() {
         <p style={{ textAlign: 'center', marginTop: '20px', color: 'black' }}>No data available</p>
       )}
 
-      <button
+      <button className='homeButtons'
         onClick={fetchData}
         style={{
           marginTop: '20px',
@@ -127,10 +127,10 @@ function Home() {
 
         {/* Toggle Buttons */}
         <div style={{ marginBottom: '20px' }}>
-          <button onClick={() => setView("bar")} style={{ padding: '8px', marginRight: '10px', cursor: 'pointer' }}>
+          <button className='homeButtons' onClick={() => setView("bar")} style={{ padding: '8px', marginRight: '10px', cursor: 'pointer' }}>
             Bar Chart
           </button>
-          <button onClick={() => setView("pie")} style={{ padding: '8px', cursor: 'pointer' }}>
+          <button className='homeButtons' onClick={() => setView("pie")} style={{ padding: '8px', cursor: 'pointer' }}>
             Pie Chart
           </button>
         </div>

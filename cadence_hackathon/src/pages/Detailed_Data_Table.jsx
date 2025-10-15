@@ -79,10 +79,9 @@ function DDTable() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>3. Detailed Data Table</h2>
+    <div className='page_layout'>
+      <h1 className='pageHeading'>Detailed Data Table</h1>
 
-      {/* Dropdown for Key Filtering */}
       <div style={{ marginBottom: '20px' }}>
         <label style={{ marginRight: '10px', fontWeight: 'bold', color: 'black' }}>Filter by Key:</label>
         <select
@@ -104,7 +103,7 @@ function DDTable() {
         </select>
       </div>
 
-      <label style={{ marginBottom: '10px', display: 'inline-block' }}>
+      <label style={{ marginBottom: '10px', display: 'inline-block', color: 'black' }}>
         <input
           type="checkbox"
           checked={showRemarks}

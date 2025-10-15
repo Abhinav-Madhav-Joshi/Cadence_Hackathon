@@ -1,15 +1,17 @@
-.home-page{
+.page_layout{
   background-color: beige;
   padding: 20px;
+  height: 100%;
 }
 
-.homeHeading{
+.pageHeading{
   padding: 20px; 
   background-color: rgb(0, 42, 255);
   box-shadow: -7px 10px 15px black;
   width: fit-content;
   border-radius: 20px;
   margin-left: 3%;
+  margin-bottom: 4%;
 }
 
 .homeTableColumnHeadings{
@@ -24,7 +26,6 @@
 }
 
 .homeFilter{
-  margin-top: 4%;
   margin-bottom: 2%;
 }
 
@@ -36,5 +37,22 @@
 .homeCharts{
   padding: 20px;
   width: 50%;
-  /* box-shadow: 0 -5px 10px rgba(0,0,0,0.1); */
+}
+
+.homeButtons{
+  transition: 0.5s ease;
+}
+
+.homeButtons:hover{
+  transform: scale(1.02);
+  box-shadow: -3px 5px 15px black;
+}
+
+.DDT-page{
+  background-color: beige;
+  padding: 20px;
+}
+
+.DDT_table{
+  background-color: rgb(85, 78, 78);
 }

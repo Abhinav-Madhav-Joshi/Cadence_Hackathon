@@ -47,33 +47,27 @@ function ATable() {
   }, [data]);
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2 style={{ color: 'black' }}>RSU Breakdown Table</h2>
+    <div className='page_layout'>
+      <h2 className='pageHeading'>RSU Breakdown Table</h2>
 
       <table
-        style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          backgroundColor: 'white',
-          color: 'black',
-          marginTop: '20px',
-        }}
+        className='homeTable'
       >
         <thead>
-          <tr style={{ backgroundColor: '#4CAF50', color: 'white' }}>
-            <th style={{ border: '2px solid black', padding: '10px' }}>R</th>
-            <th style={{ border: '2px solid black', padding: '10px' }}>S</th>
-            <th style={{ border: '2px solid black', padding: '10px' }}>U</th>
-            <th style={{ border: '2px solid black', padding: '10px' }}>Count</th>
+          <tr>
+            <th className='homeTableColumnHeadings'>R</th>
+            <th className='homeTableColumnHeadings'>S</th>
+            <th className='homeTableColumnHeadings'>U</th>
+            <th className='homeTableColumnHeadings'>Count</th>
           </tr>
         </thead>
         <tbody>
           {groupedData.map((row, index) => (
-            <tr key={index} style={{ backgroundColor: '#ffeb3b' }}>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center' }}>{row.R}</td>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center' }}>{row.S}</td>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center' }}>{row.U}</td>
-              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center' }}>{row.Count}</td>
+            <tr key={index} style={{ backgroundColor: 'white' }}>
+              <td style={{ border: '2px solid black', padding: '10px', textAlign: 'center', color: 'black' }}>{row.R}</td>
+              <td style={{ border: '2px solid black', padding: '10px', color: 'black',textAlign: 'center' }}>{row.S}</td>
+              <td style={{ border: '2px solid black', padding: '10px', color: 'black',textAlign: 'center' }}>{row.U}</td>
+              <td style={{ border: '2px solid black', padding: '10px', color: 'black',textAlign: 'center' }}>{row.Count}</td>
             </tr>
           ))}
         </tbody>
