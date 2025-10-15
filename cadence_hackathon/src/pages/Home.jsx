@@ -133,7 +133,7 @@ function Home() {
       {/* Table */}
       <div className='homeData'>
         <div>
-        <table className='homeTable'>
+        <table className='home_AT_Table'>
           <thead>
             <tr>
               <th className='homeTableColumnHeadings'>S.NO</th>
